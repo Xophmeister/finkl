@@ -26,6 +26,11 @@ b = TypeVar("b")
 c = TypeVar("c")
 
 
+def identity(x:a) -> a:
+    """ id :: a -> a """
+    return x
+
+
 def compose(f:Callable[[b], c], g:Callable[[a], b]) -> Callable[[a], c]:
     """ (.) :: (b -> c) -> (a -> b) -> (a -> c) """
     return lambda x: f(g(x))

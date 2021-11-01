@@ -46,6 +46,14 @@ Convenience imports at the package root:
 
 ### `finkl.utils`
 
+#### `identity`
+
+Identity function; equivalent to Haskell's:
+
+```haskell
+id :: a -> a
+```
+
 #### `compose`
 
 Function composition; equivalent to Haskell's:
