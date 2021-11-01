@@ -53,10 +53,7 @@ class Maybe(Generic[a, b], Eq, Applicative[a, b], Monad[a]):
         return Maybe(_Nothing if self._nothing else fn(self._v))
 
     @staticmethod
-    def pure(v:Union[a, Type[_Nothing]]) -> Maybe[a, Any]:
-        if v is _Nothing:
-            raise ValueError
-
+    def pure(v:a) -> Maybe[a, Any]:
         return Maybe(v)
 
     def applied_over(self, rhs:Maybe[a, Any]) -> Maybe[b, Any]:
