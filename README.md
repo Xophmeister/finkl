@@ -3,6 +3,10 @@
 Learning Haskell by reimplementing its algebraic structures and classic
 primitives in Python. Perhaps even usefully so!
 
+## Install
+
+    pip install finkl
+
 ## Abstract Base Classes
 
 Where it makes sense -- and even where it doesn't -- Haskell's algebraic
@@ -15,32 +19,129 @@ Haskell's parametric polymorphism.
 
 Convenience imports at the package root:
 
-* [`Eq`](#eq)
-* [`Functor`](#functor)
-* [`Applicative`](#applicative)
-* [`Monad`](#monad)
+* `Eq`
+* `Functor`
+* `Applicative`
+* `Monad`
 
 ### `finkl.data.eq`
 
 #### `Eq`
 
-...
+Abstract base class for equality checking.
+
+##### `__eq__`
+
+Implementation required: Python dunder method to implement equality
+checking. Equivalent to Haskell's:
+
+```haskell
+(==) :: Eq a => a -> a -> bool
+```
+
+##### `__neq__`
+
+Default implementation is the logical inverse of `__eq__`. Equivalent to
+Haskell's:
+
+```haskell
+(/=) :: Eq a => a -> a -> bool
+```
 
 ### `finkl.data.functor`
 
-#### `Functor`
+#### `Functor[a]`
 
-...
+Abstract base class for functors over type `a`.
 
-#### `Applicative`
+##### `fmap`
 
-...
+Implementation required: Functor mapping, which applies the given
+function to itself and returns a functor. Equivalent to Haskell's:
+
+```haskell
+fmap :: Functor f => f a -> (a -> b) -> f b
+```
+
+#### `Applicative[a, b]`
+
+Abstract base class for applicative functors; that is, functors of
+functions from type `a` to `b`.
+
+##### `pure`
+
+Static implementation required: Return the functor from the given value.
+Equivalent to Haskell's:
+
+```haskell
+pure :: Functor f => a -> f a
+```
+
+##### `applied_over`
+
+Implementation required: Return the functor created by appling the
+applicative functor over the specified input functor. Equivalent to
+Haskell's:
+
+```haskell
+(<*>) :: Functor f => f (a -> b) -> f a -> f b
+```
+
+**Note** Python's matrix multiplication operator (`@`) is overloaded to
+mimic Haskell's `(<*>)`.
 
 ### `finkl.data.monad`
 
-#### `Monad`
+#### `Monad[a]`
 
-...
+Abstract base class for monads over type `a`.
+
+##### `retn`
+
+Static implementation required: Return the monad from the given value.
+Equivalent to Haskell's:
+
+```haskell
+return :: Monad m => a -> m a
+```
+
+##### `bind`
+
+Implementation required: Monadic bind. Equivalent to Haskell's:
+
+```haskell
+(>>=) :: Monad m => m a -> (a -> m b) -> m b
+```
+
+**Note** Python's greater or equal than operator (`>=`) is overloaded to
+mimic Haskell's `(>>=)`. Using `bind` may be clearer due to the operator
+precedence of `>=`, which may necessitate excessive parentheses.
+
+##### `then`
+
+Default implementation does a monadic bind that supplants the monad with
+the new, given monad. Equivalent to Haskell's:
+
+```haskell
+(>>) :: Monad m => m a -> m b -> m b
+```
+
+**Note** Python's right shift operator (`>>`) is overloaded to mimic
+Haskell's `(>>)`. Using `then` may be clearer due to the operator
+precedence of `>>`, which may necessitate excessive parentheses.
+
+##### `fail`
+
+Implementation required: Return a monad from a given input string.
+Equivalent to Haskell's:
+
+```haskell
+fail :: Monad m => String => m a
+```
+
+**Note** This function is used in Haskell's `do` notation, an analogue
+of which is not currently implemented. As such, the implementation for
+this method can be stubbed.
 
 ## Implementations
 
@@ -48,7 +149,7 @@ Convenience imports at the package root:
 
 #### `identity`
 
-Identity function; equivalent to Haskell's:
+Identity function. Equivalent to Haskell's:
 
 ```haskell
 id :: a -> a
@@ -56,7 +157,7 @@ id :: a -> a
 
 #### `compose`
 
-Function composition; equivalent to Haskell's:
+Function composition. Equivalent to Haskell's:
 
 ```haskell
 (.) :: (b -> c) -> (a -> b) -> (a -> c)

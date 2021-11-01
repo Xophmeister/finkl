@@ -29,6 +29,7 @@ b = TypeVar("b")
 
 
 class Monad(Generic[a], metaclass=ABCMeta):
+    """ Abstract base class for monads """
     @staticmethod
     @abstractmethod
     def retn(v:a) -> Monad[a]:
