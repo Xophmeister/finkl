@@ -18,7 +18,7 @@ with this program. If not, see https://www.gnu.org/licenses/
 from typing import Callable, TypeVar
 
 
-__all__ = ["compose"]
+__all__ = ["identity", "compose"]
 
 
 a = TypeVar("a")
