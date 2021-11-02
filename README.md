@@ -145,7 +145,7 @@ this method can be stubbed.
 
 ## Implementations
 
-### `finkl.utils`
+### `finkl.util`
 
 #### `identity`
 
