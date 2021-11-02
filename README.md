@@ -22,6 +22,7 @@ Convenience imports at the package root:
 * `Eq`
 * `Functor`
 * `Applicative`
+* `Monoid`
 * `Monad`
 
 ### `finkl.data.eq`
@@ -89,6 +90,44 @@ Haskell's:
 
 **Note** Python's matrix multiplication operator (`@`) is overloaded to
 mimic Haskell's `(<*>)`.
+
+### `finkl.data.monoid`
+
+#### `Monoid[m]`
+
+Abstract base class for monoids over type `m`.
+
+##### `mempty`
+
+Class variable definition required: the monoid's identity element.
+Equivalent to Haskell's:
+
+```haskell
+mempty :: Monoid m => m
+```
+
+##### `__init__`
+
+Implementation required: monoid constructor, taking a single argument.
+
+##### `mappend`
+
+Implementation required: The monoid's append function. Equivalent to
+Haskell's:
+
+```haskell
+mappend :: Monoid m => m -> m -> m
+```
+
+##### `mconcat`
+
+Default implementation folds over the given monoid values, using
+`mappend` and starting from the identity element (`mempty`). Equivalent
+to Haskell's:
+
+```haskell
+mconcat :: Monoid m => [m] -> m
+```
 
 ### `finkl.data.monad`
 
@@ -188,4 +227,37 @@ not Just(123) == Nothing
 Just(123).fmap(lambda x: x + 1)
 Just(lambda x: x + 1).applied_over(Just(123))
 Just(123).bind(lambda x: Just(x + 1))
+```
+
+### `finkl.monoid`
+
+#### `List`
+
+Monoid over lists of any type.
+
+Example:
+
+```python
+List.mconcat([1], [2], [3]) == [1, 2, 3]
+```
+
+#### `Sum` and `Product`
+
+Sum and product monoids over numeric types.
+
+Example:
+
+```python
+Sum.mconcat(1, 2, 3) == Product.mconcat(1, 2, 3)
+```
+
+#### `Any` and `All`
+
+Disjunction and conjunction monoids over Booleans.
+
+Example:
+
+```python
+Any.mconcat(False, True, False) == True
+All.mconcat(True, True, False) == False
 ```
