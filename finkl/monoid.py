@@ -15,11 +15,13 @@ You should have received a copy of the GNU General Public License along
 with this program. If not, see https://www.gnu.org/licenses/
 """
 
+from __future__ import annotations
+
 from abc import ABCMeta
 from numbers import Number
 from typing import Generic, List as ListT, TypeVar
 
-from finkl.abc import Monoid
+from finkl.abc import Eq, Monoid
 
 
 __all__ = ["List", "Sum", "Product", "Any", "All"]
@@ -27,7 +29,7 @@ __all__ = ["List", "Sum", "Product", "Any", "All"]
 
 m = TypeVar("m")
 
-class _BaseMonoid(Generic[m], Monoid[m], metaclass=ABCMeta):
+class _BaseMonoid(Generic[m], Eq, Monoid[m], metaclass=ABCMeta):
     """ We use inheritance to avoid too much boilerplate """
     _m:m
 
@@ -35,44 +37,57 @@ class _BaseMonoid(Generic[m], Monoid[m], metaclass=ABCMeta):
         self._m = value
 
     def __repr__(self) -> str:
-        return repr(self._m)
+        return f"{self.__class__.__name__}({repr(self._m)})"
+
+    def __eq__(self, rhs:_BaseMonoid) -> bool:
+        return self._m == rhs._m
 
 
 class List(_BaseMonoid[ListT]):
     """ List monoid """
-    mempty = []
+    @staticmethod
+    def mempty():
+        return List([])
 
-    def mappend(self, rhs:ListT) -> ListT:
-        return self._m + rhs
+    def mappend(self, rhs:List) -> List:
+        return List(self._m + rhs._m)
 
 
 class Sum(_BaseMonoid[Number]):
     """ Numeric sum monoid """
-    mempty = 0
+    @staticmethod
+    def mempty():
+        return Sum(0)
 
-    def mappend(self, rhs:Number) -> Number:
-        return self._m + rhs
+    def mappend(self, rhs:Sum) -> Sum:
+        return Sum(self._m + rhs._m)
 
 
 class Product(_BaseMonoid[Number]):
     """ Numeric product monoid """
-    mempty = 1
+    @staticmethod
+    def mempty():
+        return Product(1)
 
-    def mappend(self, rhs:Number) -> Number:
-        return self._m * rhs
+    def mappend(self, rhs:Product) -> Product:
+        return Product(self._m * rhs._m)
 
 
 class Any(_BaseMonoid[bool]):
     """ Any monoid """
-    mempty = False
+    @staticmethod
+    def mempty():
+        return Any(False)
 
-    def mappend(self, rhs:bool) -> bool:
-        return self._m or rhs
+    def mappend(self, rhs:Any) -> Any:
+        return Any(self._m or rhs._m)
 
 
 class All(_BaseMonoid[bool]):
     """ All monoid """
-    mempty = True
+    @staticmethod
+    def mempty():
+        return All(True)
 
-    def mappend(self, rhs:bool) -> bool:
-        return self._m and rhs
+    def mappend(self, rhs:All) -> All:
+        return All(self._m and rhs._m)

@@ -40,8 +40,8 @@ Abstract base class for equality checking.
 
 ##### `__eq__`
 
-Implementation required: Python dunder method to implement equality
-checking. Equivalent to Haskell's:
+Method implementation required: Python dunder method to implement
+equality checking. Equivalent to Haskell's:
 
 ```haskell
 (==) :: Eq a => a -> a -> bool
@@ -64,7 +64,7 @@ Abstract base class for functors over type `a`.
 
 ##### `fmap`
 
-Implementation required: Functor mapping, which applies the given
+Method implementation required: Functor mapping, which applies the given
 function to itself and returns a functor. Equivalent to Haskell's:
 
 ```haskell
@@ -78,8 +78,8 @@ functions from type `a` to `b`.
 
 ##### `pure`
 
-Static implementation required: Return the functor from the given value.
-Equivalent to Haskell's:
+Class method implementation required: Return the functor from the given
+value. Equivalent to Haskell's:
 
 ```haskell
 pure :: Functor f => a -> f a
@@ -87,8 +87,8 @@ pure :: Functor f => a -> f a
 
 ##### `applied_over`
 
-Implementation required: Return the functor created by appling the
-applicative functor over the specified input functor. Equivalent to
+Method implementation required: Return the functor created by appling
+the applicative functor over the specified input functor. Equivalent to
 Haskell's:
 
 ```haskell
@@ -113,14 +113,10 @@ Equivalent to Haskell's:
 mempty :: Monoid m => m
 ```
 
-##### `__init__`
-
-Implementation required: monoid constructor, taking a single argument.
-
 ##### `mappend`
 
-Implementation required: The monoid's append function. Equivalent to
-Haskell's:
+Method implementation required: The monoid's append function. Equivalent
+to Haskell's:
 
 ```haskell
 mappend :: Monoid m => m -> m -> m
@@ -144,8 +140,8 @@ Abstract base class for monads over type `a`.
 
 ##### `retn`
 
-Static implementation required: Return the monad from the given value.
-Equivalent to Haskell's:
+Class method implementation required: Return the monad from the given
+value.  Equivalent to Haskell's:
 
 ```haskell
 return :: Monad m => a -> m a
@@ -153,7 +149,7 @@ return :: Monad m => a -> m a
 
 ##### `bind`
 
-Implementation required: Monadic bind. Equivalent to Haskell's:
+Method implementation required: Monadic bind. Equivalent to Haskell's:
 
 ```haskell
 (>>=) :: Monad m => m a -> (a -> m b) -> m b
@@ -214,6 +210,7 @@ Function composition. Equivalent to Haskell's:
 Convenience imports at the package root:
 
 * `Maybe`, `Just` and `Nothing`
+* `Writer`
 
 #### `finkl.monad.maybe`
 
@@ -242,7 +239,45 @@ Just(lambda x: x + 1).applied_over(Just(123))
 Just(123).bind(lambda x: Just(x + 1))
 ```
 
+#### `finkl.monad.writer`
+
+##### `Writer`
+
+The "Writer" monad, which takes some value and a monoid context. The
+`Writer` class shouldn't be instantiated directly, you should subclass
+it and define a `monoid` class variable.
+
+You can extract the monad's value and writer state by using the `value`
+and `writer` properties, respectively.
+
+Implements:
+* `Monad`
+
+Example:
+
+```python
+class Logger(Writer[int, str]):
+    monoid = List  # finkl.monoid.List
+
+def increment(x):
+    return Logger(x + 1, List([f"Incremented {x}"]))
+
+def double(x):
+    return Logger(x * 2, List([f"Doubled {x}"]))
+
+Logger.retn(0).bind(increment) \
+              .bind(double) \
+              .bind(increment)
+```
+
+**Note** The `Writer` class is genericised over the value type and the
+type over the monoid (_not_ the monoid type). You're welcome.
+
 ### `finkl.monoid`
+
+All the following implementations implement:
+* `Eq`
+* `Monoid`
 
 #### `List`
 
@@ -251,7 +286,7 @@ Monoid over lists of any type.
 Example:
 
 ```python
-List.mconcat([1], [2], [3]) == [1, 2, 3]
+List.mconcat(List([1]), List([2]), List([3])) == List([1, 2, 3])
 ```
 
 #### `Sum` and `Product`
@@ -261,7 +296,7 @@ Sum and product monoids over numeric types.
 Example:
 
 ```python
-Sum.mconcat(1, 2, 3) == Product.mconcat(1, 2, 3)
+Sum.mconcat(Sum(1), Sum(2), Sum(3)) == Product.mconcat(Product(1), Product(2), Product(3))
 ```
 
 #### `Any` and `All`
@@ -271,6 +306,6 @@ Disjunction and conjunction monoids over Booleans.
 Example:
 
 ```python
-Any.mconcat(False, True, False) == True
-All.mconcat(True, True, False) == False
+Any.mconcat(Any(False), Any(True), Any(False)) == Any(True)
+All.mconcat(Any(True), Any(True), Any(False)) == Any(False)
 ```

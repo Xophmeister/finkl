@@ -52,8 +52,8 @@ class Maybe(Generic[a, b], Eq, Applicative[a, b], Monad[a]):
     def fmap(self, fn:Callable[[a], b]) -> Maybe[b, Any]:
         return Maybe(_Nothing if self._nothing else fn(self._v))
 
-    @staticmethod
-    def pure(v:a) -> Maybe[a, Any]:
+    @classmethod
+    def pure(cls, v:a) -> Maybe[a, Any]:
         return Maybe(v)
 
     def applied_over(self, rhs:Maybe[a, Any]) -> Maybe[b, Any]:

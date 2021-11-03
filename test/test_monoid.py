@@ -22,32 +22,32 @@ from finkl.monoid import List, Sum, Product, Any, All
 
 class TestList(unittest.TestCase):
     def test_mconcat(self):
-        self.assertEqual(List.mconcat(), [])
-        self.assertEqual(List.mconcat([1], [2], [3]), [1, 2, 3])
+        self.assertEqual(List.mconcat(), List([]))
+        self.assertEqual(List.mconcat(*[List([x]) for x in [1, 2, 3]]), List([1, 2, 3]))
 
 
 class TestSum(unittest.TestCase):
     def test_mconcat(self):
-        self.assertEqual(Sum.mconcat(), 0)
-        self.assertEqual(Sum.mconcat(1, 2, 3), 6)
+        self.assertEqual(Sum.mconcat(), Sum(0))
+        self.assertEqual(Sum.mconcat(*[Sum(x) for x in [1, 2, 3]]), Sum(6))
 
 
 class TestProduct(unittest.TestCase):
     def test_mconcat(self):
-        self.assertEqual(Product.mconcat(), 1)
-        self.assertEqual(Product.mconcat(1, 2, 3), 6)
+        self.assertEqual(Product.mconcat(), Product(1))
+        self.assertEqual(Product.mconcat(*[Product(x) for x in [1, 2, 3]]), Product(6))
 
 
 class TestAny(unittest.TestCase):
     def test_mconcat(self):
-        self.assertEqual(Any.mconcat(), False)
-        self.assertEqual(Any.mconcat(False, False, True), True)
+        self.assertEqual(Any.mconcat(), Any(False))
+        self.assertEqual(Any.mconcat(*[Any(x) for x in [False, False, True]]), Any(True))
 
 
 class TestAll(unittest.TestCase):
     def test_mconcat(self):
-        self.assertEqual(All.mconcat(), True)
-        self.assertEqual(All.mconcat(True, True, True), True)
+        self.assertEqual(All.mconcat(), All(True))
+        self.assertEqual(All.mconcat(*[All(x) for x in [True, True, True]]), All(True))
 
 
 if __name__ == "__main__":

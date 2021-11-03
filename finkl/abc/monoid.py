@@ -15,9 +15,11 @@ You should have received a copy of the GNU General Public License along
 with this program. If not, see https://www.gnu.org/licenses/
 """
 
+from __future__ import annotations
+
 from abc import ABCMeta, abstractmethod
 from functools import reduce
-from typing import ClassVar, Generic, TypeVar
+from typing import Generic, TypeVar
 
 
 __all__ = ["Monoid"]
@@ -27,18 +29,17 @@ m = TypeVar("m")
 
 class Monoid(Generic[m], metaclass=ABCMeta):
     """ Abstract base class for monoids """
-    mempty:ClassVar[m]
+    @staticmethod
+    @abstractmethod
+    def mempty() -> Monoid[m]:
+        """ mempty :: m """
 
     @abstractmethod
-    def __init__(self, value:m) -> None:
-        """ Constructor """
-
-    @abstractmethod
-    def mappend(self, rhs:m) -> m:
+    def mappend(self, rhs:Monoid[m]) -> Monoid[m]:
         """ mappend :: m -> m -> m """
 
     @classmethod
-    def mconcat(cls, *ms:m) -> m:
+    def mconcat(cls, *ms:Monoid[m]) -> Monoid[m]:
         """ mconcat :: [m] -> m """
-        folder = lambda x, y: cls(x).mappend(y)
-        return reduce(folder, ms, cls.mempty)
+        folder = lambda x, y: x.mappend(y)
+        return reduce(folder, ms, cls.mempty())

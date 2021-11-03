@@ -30,9 +30,9 @@ b = TypeVar("b")
 
 class Monad(Generic[a], metaclass=ABCMeta):
     """ Abstract base class for monads """
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def retn(v:a) -> Monad[a]:
+    def retn(cls, v:a) -> Monad[a]:
         """ return :: a -> m a """
 
     @abstractmethod

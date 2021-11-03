@@ -37,9 +37,9 @@ class Functor(Generic[a], metaclass=ABCMeta):
 
 class Applicative(Generic[a, b], Functor[Callable[[a], b]], metaclass=ABCMeta):
     """ Abstract base class for applicative functors """
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def pure(v:a) -> Functor[a]:
+    def pure(cls, v:a) -> Functor[a]:
         """ pure :: a -> f a """
 
     @abstractmethod
