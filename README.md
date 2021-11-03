@@ -15,7 +15,7 @@ interfaces). Type annotations are used throughout, but bear in mind that
 Python does not enforce these nor does its type system lend itself to
 Haskell's parametric polymorphism.
 
-### `finkl.data`
+### `finkl.abc`
 
 Convenience imports at the package root:
 
@@ -25,7 +25,7 @@ Convenience imports at the package root:
 * `Monoid`
 * `Monad`
 
-### `finkl.data.eq`
+### `finkl.abc.eq`
 
 #### `Eq`
 
@@ -49,7 +49,7 @@ Haskell's:
 (/=) :: Eq a => a -> a -> bool
 ```
 
-### `finkl.data.functor`
+### `finkl.abc.functor`
 
 #### `Functor[a]`
 
@@ -91,7 +91,7 @@ Haskell's:
 **Note** Python's matrix multiplication operator (`@`) is overloaded to
 mimic Haskell's `(<*>)`.
 
-### `finkl.data.monoid`
+### `finkl.abc.monoid`
 
 #### `Monoid[m]`
 
@@ -129,7 +129,7 @@ to Haskell's:
 mconcat :: Monoid m => [m] -> m
 ```
 
-### `finkl.data.monad`
+### `finkl.abc.monad`
 
 #### `Monad[a]`
 
@@ -202,9 +202,15 @@ Function composition. Equivalent to Haskell's:
 (.) :: (b -> c) -> (a -> b) -> (a -> c)
 ```
 
-### `finkl.maybe`
+### `finkl.monad`
 
-#### `Maybe`, `Just` and `Nothing`
+Convenience imports at the package root:
+
+* `Maybe`, `Just` and `Nothing`
+
+#### `finkl.monad.maybe`
+
+##### `Maybe`, `Just` and `Nothing`
 
 Python doesn't have sum types, so `Just` and `Nothing` are just wrappers
 that instantiate an appropriate `Maybe` object. You probably don't need

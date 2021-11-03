@@ -19,7 +19,7 @@ from abc import ABCMeta
 from numbers import Number
 from typing import Generic, List as ListT, TypeVar
 
-from finkl.data import Monoid
+from finkl.abc import Monoid
 
 
 __all__ = ["List", "Sum", "Product", "Any", "All"]

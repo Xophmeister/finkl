@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from typing import Any, Generic, Type, TypeVar, Union
 
-from finkl.data import Eq, Applicative, Monad
+from finkl.abc import Eq, Applicative, Monad
 
 
 __all__ = ["Maybe", "Just", "Nothing"]

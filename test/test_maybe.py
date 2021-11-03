@@ -17,7 +17,7 @@ with this program. If not, see https://www.gnu.org/licenses/
 
 import unittest
 
-from finkl.maybe import Maybe, Just, Nothing
+from finkl.monad import Maybe, Just, Nothing
 from finkl.util import compose
 
 
