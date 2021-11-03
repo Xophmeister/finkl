@@ -7,21 +7,65 @@ orbs:
 jobs:
   test-and-coverage:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.7
+
     steps:
       - checkout
+
       - python/install-packages:
           pkg-manager: pip
           pip-dependency-file: ""
           args: coverage
+
       - run:
           name: Run tests and collect coverage
           command: |
             coverage run -m unittest -v
             coverage xml
+
       - codecov/upload
+
+  build-and-package:
+    docker:
+      - image: cimg/python:3.7
+
+    steps:
+      - checkout
+
+      - python/install-packages:
+          pkg-manager: pip
+          pip-dependency-file: ""
+          args: twine
+
+      - run:
+          name: Write .pypirc
+          command: |
+            printf "%s\n" "[pypi]" \
+                          "username = Xophmeister" \
+                          "password = ${PYPI_PASSWORD}" \
+                          > ~/.pypirc
+
+      - run:
+          name: Build package
+          command: python -m build
+
+      - run:
+          name: Upload to PyPI
+          command: python -m twine upload dist/*
 
 workflows:
   main:
     jobs:
-      - test-and-coverage
+      - test-and-coverage:
+          filters:
+            tags:
+              only: /.*/
+
+      - build-and-package:
+          requires:
+            - test-and-coverage
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
