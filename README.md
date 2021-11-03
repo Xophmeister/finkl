@@ -1,11 +1,11 @@
 # finkl
 
+[![pypi](https://img.shields.io/pypi/v/finkl.svg)](https://pypi.org/project/finkl/)
+
 Learning Haskell by reimplementing its algebraic structures and classic
 primitives in Python. Perhaps even usefully so!
 
 ## Install
-
-[![pypi](https://img.shields.io/pypi/v/finkl.svg)](https://pypi.org/project/finkl/)
 
     pip install finkl
 
@@ -176,16 +176,16 @@ precedence of `>>`, which may necessitate excessive parentheses.
 
 ##### `fail`
 
-Implementation required: Return a monad from a given input string.
-Equivalent to Haskell's:
+Default implementation raises an exception with the given string. It
+*should* return a monad from the given string. Equivalent to Haskell's:
 
 ```haskell
 fail :: Monad m => String => m a
 ```
 
 **Note** This function is used in Haskell's `do` notation, an analogue
-of which is not currently implemented. As such, the implementation for
-this method can be stubbed.
+of which is not currently implemented. As such, this is not an abstract
+method and doesn't require an implementation.
 
 ## Implementations
 

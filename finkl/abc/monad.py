@@ -51,8 +51,8 @@ class Monad(Generic[a], metaclass=ABCMeta):
         return self.then(rhs)
 
     @staticmethod
-    @abstractmethod
     def fail(msg:str) -> Monad[a]:
         """ fail :: String -> m a """
+        raise Exception(msg)
 
     # TODO do notation analogue...maybe with context managers

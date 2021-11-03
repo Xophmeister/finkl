@@ -1,5 +1,6 @@
 test:
-	python -m unittest -v
+	coverage run -m unittest -v
+	coverage report -m
 
 dist:
 	python -m build
