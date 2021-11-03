@@ -35,7 +35,7 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
           pip-dependency-file: ""
-          args: twine
+          args: build twine
 
       - run:
           name: Write .pypirc
