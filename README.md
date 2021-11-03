@@ -5,15 +5,20 @@ primitives in Python. Perhaps even usefully so!
 
 ## Install
 
+[![pypi](https://img.shields.io/pypi/v/finkl.svg)](https://pypi.org/project/finkl/)
+
     pip install finkl
 
 ## Abstract Base Classes
 
 Where it makes sense -- and even where it doesn't -- Haskell's algebraic
 typeclasses are implemented as Python abstract base classes (i.e., class
-interfaces). Type annotations are used throughout, but bear in mind that
+interfaces).
+
+**Note** Type annotations are used throughout, but bear in mind that
 Python does not enforce these nor does its type system lend itself to
-Haskell's parametric polymorphism.
+Haskell's parametric polymorphism, so the correct type may not even be
+expressible. Also, I'm only human...
 
 ### `finkl.abc`
 
