@@ -1,6 +1,8 @@
 # finkl
 
-[![pypi](https://img.shields.io/pypi/v/finkl.svg)](https://pypi.org/project/finkl/)
+[![CircleCI](https://circleci.com/gh/Xophmeister/finkl.svg?style=shield)](https://circleci.com/gh/Xophmeister/finkl)
+[![Coverage Status](https://codecov.io/github/Xophmeister/finkl/coverage.svg?branch=master)](https://codecov.io/github/Xophmeister/finkl?branch=master)
+[![PyPI](https://img.shields.io/pypi/v/finkl.svg)](https://pypi.org/project/finkl/)
 
 Learning Haskell by reimplementing its algebraic structures and classic
 primitives in Python. Perhaps even usefully so!
