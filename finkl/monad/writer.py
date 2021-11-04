@@ -17,7 +17,7 @@ with this program. If not, see https://www.gnu.org/licenses/
 
 from __future__ import annotations
 
-from typing import Any, Callable, ClassVar, Generic, Type, TypeVar
+from typing import Callable, ClassVar, Generic, Optional, Tuple, Type, TypeVar
 
 from finkl.abc import Monad, Monoid
 
@@ -27,33 +27,30 @@ __all__ = ["Writer"]
 
 a = TypeVar("a")
 b = TypeVar("b")
+m = TypeVar("m", bound=Monoid)
 
-class Writer(Generic[a, b], Monad[a]):
+class Writer(Generic[a, m], Monad[a]):
     """ Writer monad """
     _v:a
-    _w:Monoid[b]
+    _w:m
 
-    monoid:ClassVar[Monoid[b]]
+    writer:ClassVar[Type[m]]
 
-    def __init__(self, v:a, w:Monoid[b]) -> None:
+    def __init__(self, v:a, w:Optional[m] = None) -> None:
         self._v = v
-        self._w = w
+        self._w = self.writer.mempty() if w is None else w
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({repr(self.value)}, {repr(self.writer)})"
+        return f"{self.__class__.__name__}({repr(self._v)}, {repr(self._w)})"
 
-    @property
-    def value(self) -> a:
-        return self._v
-
-    @property
-    def writer(self) -> Monoid[b]:
-        return self._w
+    def run_writer(self) -> Tuple[a, m]:
+        """ runWriter :: Writer w a -> (a, w) """
+        return self._v, self._w
 
     @classmethod
-    def retn(cls, v:a) -> Writer[a, b]:
-        return cls(v, cls.monoid.mempty())
+    def retn(cls, v:a) -> Writer[a, m]:
+        return cls(v)
 
-    def bind(self, rhs:Callable[[a], Writer[b, Any]]) -> Writer[b, Any]:
-        new = rhs(self.value)
-        return self.__class__(new.value, self.writer.mappend(new.writer))
+    def bind(self, rhs:Callable[[a], Writer[b, m]]) -> Writer[b, m]:
+        new = rhs(self._v)
+        return self.__class__(new._v, self._w.mappend(new._w))

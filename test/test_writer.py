@@ -15,58 +15,96 @@ You should have received a copy of the GNU General Public License along
 with this program. If not, see https://www.gnu.org/licenses/
 """
 
-import unittest
+from __future__ import annotations
 
+import unittest
+from typing import Generic, TypeVar
+
+from finkl.abc import Eq, Monoid
 from finkl.monad import Writer
 from finkl.monoid import List, Sum
 
 
-class _Logger(Writer[int, str]):
-    monoid = List
+a = TypeVar("a")
+m = TypeVar("m", bound=Monoid)
 
-class _Counter(Writer[str, int]):
-    monoid = Sum
+class _EqWriter(Generic[a, m], Writer[a, m], Eq):
+    def __eq__(self, rhs:_EqWriter[a, m]) -> bool:
+        return self.run_writer() == rhs.run_writer()
+
+class _Logger(_EqWriter[int, List]):
+    writer = List
+
+class _Counter(_EqWriter[str, Sum]):
+    writer = Sum
 
 
 class TestWriter_Logger(unittest.TestCase):
     def test_return(self):
         logger = _Logger.retn(123)
-        self.assertEqual(logger.value, 123)
-        self.assertEqual(logger.writer, List([]))
+        self.assertEqual(logger, _Logger(123, List([])))
 
     def test_bind(self):
         _inc = lambda x: _Logger(x + 1, List([f"Incremented {x}"]))
         _dbl = lambda x: _Logger(x * 2, List([f"Doubled {x}"]))
 
-        result = _Logger.retn(0) \
-                        .bind(_inc) \
-                        .bind(_inc) \
-                        .bind(_dbl)
+        result = _Logger(0).bind(_inc) \
+                           .bind(_inc) \
+                           .bind(_dbl)
 
-        self.assertEqual(result.value, 4)
-        self.assertEqual(result.writer, List([
+        self.assertEqual(result, _Logger(4, List([
             "Incremented 0",
             "Incremented 1",
             "Doubled 2"
-        ]))
+        ])))
+
+    def test_laws(self):
+        # NOTE Obviously here we're just testing arbitrary values,
+        # rather than over the entire type space.
+        _inc = lambda x: _Logger(x + 1, List(["foo"]))
+        _dbl = lambda x: _Logger(x * 2, List(["bar"]))
+
+        # Left Identity
+        self.assertEqual(_Logger.retn(123) >= _inc, _inc(123))
+
+        # Right Identity
+        self.assertEqual(_Logger(123) >= _Logger.retn, _Logger(123))
+
+        ## Associativity
+        self.assertEqual((_Logger(123) >= _inc) >= _dbl,
+                         _Logger(123) >= (lambda x: _inc(x) >= _dbl))
+
 
 class TestWriter_Counter(unittest.TestCase):
     def test_return(self):
         counter = _Counter.retn("Hello, World!")
-        self.assertEqual(counter.value, "Hello, World!")
-        self.assertEqual(counter.writer, Sum(0))
+        self.assertEqual(counter, _Counter("Hello, World!", Sum(0)))
 
     def test_bind(self):
         def _say(what):
             return lambda x: _Counter(f"{x}{what}", Sum(1))
 
-        result = _Counter.retn("Hello") \
-                         .bind(_say(", ")) \
-                         .bind(_say("World")) \
-                         .bind(_say("!"))
+        result = _Counter("Hello").bind(_say(", ")) \
+                                  .bind(_say("World")) \
+                                  .bind(_say("!"))
 
-        self.assertEqual(result.value, "Hello, World!")
-        self.assertEqual(result.writer, Sum(3))
+        self.assertEqual(result, _Counter("Hello, World!", Sum(3)))
+
+    def test_laws(self):
+        # NOTE Obviously here we're just testing arbitrary values,
+        # rather than over the entire type space.
+        _emph = lambda x: _Counter(f"{x}!", Sum(1))
+        _qstn = lambda x: _Counter(f"{x}?", Sum(1))
+
+        # Left Identity
+        self.assertEqual(_Counter.retn("foo") >= _emph, _emph("foo"))
+
+        # Right Identity
+        self.assertEqual(_Counter("foo") >= _Counter.retn, _Counter("foo"))
+
+        ## Associativity
+        self.assertEqual((_Counter("foo") >= _emph) >= _qstn,
+                         _Counter("foo") >= (lambda x: _emph(x) >= _qstn))
 
 
 if __name__ == "__main__":

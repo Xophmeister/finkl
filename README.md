@@ -243,12 +243,17 @@ Just(123).bind(lambda x: Just(x + 1))
 
 ##### `Writer`
 
-The "Writer" monad, which takes some value and a monoid context. The
+The "Writer" monad, which takes some value and a monoidic context. The
 `Writer` class shouldn't be instantiated directly, you should subclass
-it and define a `monoid` class variable.
+it and define a `writer` class variable, which defines the monoid.
 
-You can extract the monad's value and writer state by using the `value`
-and `writer` properties, respectively.
+You can extract the monad's value and writer state by using the
+`run_writer` method, which returns a tuple of these properties,
+respectively. Equivalent to Haskell's:
+
+```haskell
+runWriter :: Writer w a -> (a, w)
+```
 
 Implements:
 * `Monad`
@@ -256,8 +261,9 @@ Implements:
 Example:
 
 ```python
-class Logger(Writer[int, str]):
-    monoid = List  # finkl.monoid.List
+# Writer over integers and finkl.monoid.List
+class Logger(Writer[int, List]):
+    writer = List
 
 def increment(x):
     return Logger(x + 1, List([f"Incremented {x}"]))
@@ -265,13 +271,19 @@ def increment(x):
 def double(x):
     return Logger(x * 2, List([f"Doubled {x}"]))
 
-Logger.retn(0).bind(increment) \
-              .bind(double) \
-              .bind(increment)
+Logger.bind(increment) \
+      .bind(double) \
+      .bind(increment)
 ```
 
+**Note** The `Writer`'s constructor takes two arguments: the required
+value and an optional monoidic context. If the monoidic context is
+omitted (default), then the monoid's identity (per `mempty`) will be
+used as the context.
+
 **Note** The `Writer` class is genericised over the value type and the
-type over the monoid (_not_ the monoid type). You're welcome.
+monoid type. Despite this, you still have to explicitly set the `writer`
+class variable to equal the monoid type.
 
 ### `finkl.monoid`
 
