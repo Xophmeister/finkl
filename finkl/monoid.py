@@ -27,7 +27,9 @@ from finkl.abc import Eq, Monoid
 __all__ = ["List", "Sum", "Product", "Any", "All"]
 
 
+a = TypeVar("a")
 m = TypeVar("m")
+
 
 class _BaseMonoid(Generic[m], Eq, Monoid[m], metaclass=ABCMeta):
     """ We use inheritance to avoid too much boilerplate """
@@ -43,13 +45,13 @@ class _BaseMonoid(Generic[m], Eq, Monoid[m], metaclass=ABCMeta):
         return self._m == rhs._m
 
 
-class List(_BaseMonoid[ListT]):
+class List(Generic[a], _BaseMonoid[ListT[a]]):
     """ List monoid """
     @staticmethod
     def mempty():
         return List([])
 
-    def mappend(self, rhs:List) -> List:
+    def mappend(self, rhs:List[a]) -> List[a]:
         return List(self._m + rhs._m)
 
 

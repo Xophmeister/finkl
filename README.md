@@ -262,7 +262,7 @@ Example:
 
 ```python
 # Writer over integers and finkl.monoid.List
-class Logger(Writer[int, List]):
+class Logger(Writer[int, List[str]]):
     writer = List
 
 def increment(x):
@@ -271,9 +271,9 @@ def increment(x):
 def double(x):
     return Logger(x * 2, List([f"Doubled {x}"]))
 
-Logger.bind(increment) \
-      .bind(double) \
-      .bind(increment)
+Logger(0).bind(increment) \
+         .bind(double) \
+         .bind(increment)
 ```
 
 **Note** The `Writer`'s constructor takes two arguments: the required
@@ -291,9 +291,9 @@ All the following implementations implement:
 * `Eq`
 * `Monoid`
 
-#### `List`
+#### `List[a]`
 
-Monoid over lists of any type.
+Monoid over lists, genericised over the given type.
 
 Example:
 

@@ -32,7 +32,7 @@ class _EqWriter(Generic[a, m], Writer[a, m], Eq):
     def __eq__(self, rhs:_EqWriter[a, m]) -> bool:
         return self.run_writer() == rhs.run_writer()
 
-class _Logger(_EqWriter[int, List]):
+class _Logger(_EqWriter[int, List[str]]):
     writer = List
 
 class _Counter(_EqWriter[str, Sum]):
