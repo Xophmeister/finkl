@@ -213,7 +213,7 @@ Convenience imports at the package root:
 * `Maybe`, `Just` and `Nothing`
 * `Writer`
 
-#### `finkl.monad.maybe`
+#### `finkl.monad.list`
 
 #### `List[a]`
 
@@ -232,6 +232,8 @@ List(1, 2, 3).fmap(lambda x: x + 1)
 List(1, 2, 3).bind(lambda x: List(x, -x))
 List.mconcat(List(1), List(2), List(3)) == List(1, 2, 3)
 ```
+
+#### `finkl.monad.maybe`
 
 ##### `Maybe`, `Just` and `Nothing`
 
