@@ -17,13 +17,7 @@ with this program. If not, see https://www.gnu.org/licenses/
 
 import unittest
 
-from finkl.monoid import List, Sum, Product, Any, All
-
-
-class TestList(unittest.TestCase):
-    def test_mconcat(self):
-        self.assertEqual(List.mconcat(), List([]))
-        self.assertEqual(List.mconcat(*[List([x]) for x in [1, 2, 3]]), List([1, 2, 3]))
+from finkl.monoid import Sum, Product, Any, All
 
 
 class TestSum(unittest.TestCase):

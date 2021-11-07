@@ -19,12 +19,12 @@ from __future__ import annotations
 
 from abc import ABCMeta
 from numbers import Number
-from typing import Generic, List as ListT, TypeVar
+from typing import Generic, TypeVar
 
 from finkl.abc import Eq, Monoid
 
 
-__all__ = ["List", "Sum", "Product", "Any", "All"]
+__all__ = ["Sum", "Product", "Any", "All"]
 
 
 a = TypeVar("a")
@@ -43,16 +43,6 @@ class _BaseMonoid(Generic[m], Eq, Monoid[m], metaclass=ABCMeta):
 
     def __eq__(self, rhs:_BaseMonoid) -> bool:
         return self._m == rhs._m
-
-
-class List(Generic[a], _BaseMonoid[ListT[a]]):
-    """ List monoid """
-    @staticmethod
-    def mempty():
-        return List([])
-
-    def mappend(self, rhs:List[a]) -> List[a]:
-        return List(self._m + rhs._m)
 
 
 class Sum(_BaseMonoid[Number]):

@@ -209,10 +209,29 @@ Function composition. Equivalent to Haskell's:
 
 Convenience imports at the package root:
 
+* `List`
 * `Maybe`, `Just` and `Nothing`
 * `Writer`
 
 #### `finkl.monad.maybe`
+
+#### `List[a]`
+
+Lists, genericised over the given type.
+
+Implements:
+* `Eq`
+* `Functor`
+* `Monad`
+* `Monoid`
+
+Example:
+
+```python
+List(1, 2, 3).fmap(lambda x: x + 1)
+List(1, 2, 3).bind(lambda x: List(x, -x))
+List.mconcat(List(1), List(2), List(3)) == List(1, 2, 3)
+```
 
 ##### `Maybe`, `Just` and `Nothing`
 
@@ -261,15 +280,15 @@ Implements:
 Example:
 
 ```python
-# Writer over integers and finkl.monoid.List
+# Writer over integers and finkl.monad.List (which is also a monoid)
 class Logger(Writer[int, List[str]]):
     writer = List
 
 def increment(x):
-    return Logger(x + 1, List([f"Incremented {x}"]))
+    return Logger(x + 1, List(f"Incremented {x}"))
 
 def double(x):
-    return Logger(x * 2, List([f"Doubled {x}"]))
+    return Logger(x * 2, List(f"Doubled {x}"))
 
 Logger(0).bind(increment) \
          .bind(double) \
@@ -290,16 +309,6 @@ class variable to equal the monoid type.
 All the following implementations implement:
 * `Eq`
 * `Monoid`
-
-#### `List[a]`
-
-Monoid over lists, genericised over the given type.
-
-Example:
-
-```python
-List.mconcat(List([1]), List([2]), List([3])) == List([1, 2, 3])
-```
 
 #### `Sum` and `Product`
 

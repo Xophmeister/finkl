@@ -21,8 +21,8 @@ import unittest
 from typing import Generic, TypeVar
 
 from finkl.abc import Eq, Monoid
-from finkl.monad import Writer
-from finkl.monoid import List, Sum
+from finkl.monad import List, Writer
+from finkl.monoid import Sum
 
 
 a = TypeVar("a")
@@ -42,27 +42,27 @@ class _Counter(_EqWriter[str, Sum]):
 class TestWriter_Logger(unittest.TestCase):
     def test_return(self):
         logger = _Logger.retn(123)
-        self.assertEqual(logger, _Logger(123, List([])))
+        self.assertEqual(logger, _Logger(123, List()))
 
     def test_bind(self):
-        _inc = lambda x: _Logger(x + 1, List([f"Incremented {x}"]))
-        _dbl = lambda x: _Logger(x * 2, List([f"Doubled {x}"]))
+        _inc = lambda x: _Logger(x + 1, List(f"Incremented {x}"))
+        _dbl = lambda x: _Logger(x * 2, List(f"Doubled {x}"))
 
         result = _Logger(0).bind(_inc) \
                            .bind(_inc) \
                            .bind(_dbl)
 
-        self.assertEqual(result, _Logger(4, List([
+        self.assertEqual(result, _Logger(4, List(
             "Incremented 0",
             "Incremented 1",
             "Doubled 2"
-        ])))
+        )))
 
     def test_laws(self):
         # NOTE Obviously here we're just testing arbitrary values,
         # rather than over the entire type space.
-        _inc = lambda x: _Logger(x + 1, List(["foo"]))
-        _dbl = lambda x: _Logger(x * 2, List(["bar"]))
+        _inc = lambda x: _Logger(x + 1, List("foo"))
+        _dbl = lambda x: _Logger(x * 2, List("bar"))
 
         # Left Identity
         self.assertEqual(_Logger.retn(123) >= _inc, _inc(123))
