@@ -106,7 +106,7 @@ Abstract base class for monoids over type `m`.
 
 ##### `mempty`
 
-Class variable definition required: the monoid's identity element.
+Static method implementation required: the monoid's identity element.
 Equivalent to Haskell's:
 
 ```haskell
