@@ -17,7 +17,8 @@ with this program. If not, see https://www.gnu.org/licenses/
 
 import unittest
 
-from finkl.monoid import Sum, Product, Any, All
+from finkl.monad import Just, Nothing
+from finkl.monoid import Sum, Product, Any, All, First, Last
 
 
 class TestSum(unittest.TestCase):
@@ -42,6 +43,18 @@ class TestAll(unittest.TestCase):
     def test_mconcat(self):
         self.assertEqual(All.mconcat(), All(True))
         self.assertEqual(All.mconcat(*[All(x) for x in [True, True, True]]), All(True))
+
+
+class TestFirst(unittest.TestCase):
+    def test_mconcat(self):
+        self.assertEqual(First.mconcat(), First(Nothing))
+        self.assertEqual(First.mconcat(*[First(x) for x in [Nothing, Nothing, Just(123), Just(456), Nothing]]), First(Just(123)))
+
+
+class TestLast(unittest.TestCase):
+    def test_mconcat(self):
+        self.assertEqual(Last.mconcat(), Last(Nothing))
+        self.assertEqual(Last.mconcat(*[Last(x) for x in [Nothing, Nothing, Just(123), Just(456), Nothing]]), Last(Just(456)))
 
 
 if __name__ == "__main__":

@@ -235,7 +235,7 @@ List.mconcat(List(1), List(2), List(3)) == List(1, 2, 3)
 
 #### `finkl.monad.maybe`
 
-##### `Maybe`, `Just` and `Nothing`
+##### `Maybe[a, b]`, `Just` and `Nothing`
 
 Python doesn't have sum types, so `Just` and `Nothing` are just wrappers
 that instantiate an appropriate `Maybe` object. You probably don't need
@@ -262,7 +262,7 @@ Just(123).bind(lambda x: Just(x + 1))
 
 #### `finkl.monad.writer`
 
-##### `Writer`
+##### `Writer[a, m]`
 
 The "Writer" monad, which takes some value and a monoidic context. The
 `Writer` class shouldn't be instantiated directly, you should subclass
@@ -311,6 +311,7 @@ class variable to equal the monoid type.
 All the following implementations implement:
 * `Eq`
 * `Monoid`
+* A `get` property, which fetches the monoid's value
 
 #### `Sum` and `Product`
 
@@ -331,4 +332,15 @@ Example:
 ```python
 Any.mconcat(Any(False), Any(True), Any(False)) == Any(True)
 All.mconcat(Any(True), Any(True), Any(False)) == Any(False)
+```
+
+#### `First[a]` and `Last[a]`
+
+First and last monoids over genericised Maybe monads.
+
+Example:
+
+```python
+First.mconcat(Nothing, Just(123), Nothing, Just(456)) == First(Just(123))
+Last.mconcat(Just(123), Just(456), Nothing, Nothing) == Last(Just(456))
 ```

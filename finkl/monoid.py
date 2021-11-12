@@ -22,13 +22,15 @@ from numbers import Number
 from typing import Generic, TypeVar
 
 from finkl.abc import Eq, Monoid
+from finkl.monad import Maybe, Nothing
 
 
-__all__ = ["Sum", "Product", "Any", "All"]
+__all__ = ["Sum", "Product", "Any", "All", "First", "Last"]
 
 
 a = TypeVar("a")
 m = TypeVar("m")
+maybe = TypeVar("maybe", bound=Maybe)
 
 
 class _BaseMonoid(Generic[m], Eq, Monoid[m], metaclass=ABCMeta):
@@ -39,10 +41,14 @@ class _BaseMonoid(Generic[m], Eq, Monoid[m], metaclass=ABCMeta):
         self._m = value
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({repr(self._m)})"
+        return f"{self.__class__.__name__}({repr(self.get)})"
 
-    def __eq__(self, rhs:_BaseMonoid) -> bool:
-        return self._m == rhs._m
+    def __eq__(self, rhs:_BaseMonoid[m]) -> bool:
+        return self.get == rhs.get
+
+    @property
+    def get(self) -> m:
+        return self._m
 
 
 class Sum(_BaseMonoid[Number]):
@@ -52,7 +58,7 @@ class Sum(_BaseMonoid[Number]):
         return Sum(0)
 
     def mappend(self, rhs:Sum) -> Sum:
-        return Sum(self._m + rhs._m)
+        return Sum(self.get + rhs.get)
 
 
 class Product(_BaseMonoid[Number]):
@@ -62,7 +68,7 @@ class Product(_BaseMonoid[Number]):
         return Product(1)
 
     def mappend(self, rhs:Product) -> Product:
-        return Product(self._m * rhs._m)
+        return Product(self.get * rhs.get)
 
 
 class Any(_BaseMonoid[bool]):
@@ -72,7 +78,7 @@ class Any(_BaseMonoid[bool]):
         return Any(False)
 
     def mappend(self, rhs:Any) -> Any:
-        return Any(self._m or rhs._m)
+        return Any(self.get or rhs.get)
 
 
 class All(_BaseMonoid[bool]):
@@ -82,4 +88,24 @@ class All(_BaseMonoid[bool]):
         return All(True)
 
     def mappend(self, rhs:All) -> All:
-        return All(self._m and rhs._m)
+        return All(self.get and rhs.get)
+
+
+class First(Generic[maybe], _BaseMonoid[maybe]):
+    """ First monoid """
+    @staticmethod
+    def mempty():
+        return First(Nothing)
+
+    def mappend(self, rhs:First[maybe]) -> First[maybe]:
+        return First(self.get if self.get != Nothing else rhs.get)
+
+
+class Last(Generic[maybe], _BaseMonoid[maybe]):
+    """ Last monoid """
+    @staticmethod
+    def mempty():
+        return Last(Nothing)
+
+    def mappend(self, rhs:Last[maybe]) -> Last[maybe]:
+        return Last(rhs.get if rhs.get != Nothing else self.get)
